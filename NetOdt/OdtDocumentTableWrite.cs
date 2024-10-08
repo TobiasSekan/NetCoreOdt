@@ -20,6 +20,7 @@ namespace NetOdt
         /// <param name="columnCount">The count of the columns</param>
         public void AppendTable(in int rowCount, in int columnCount)
         {
+            DocumentChanged = true;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");
@@ -63,6 +64,7 @@ namespace NetOdt
         /// <param name="value">The value for each cell</param>
         public void AppendTable(in int rowCount, in int columnCount, in ValueType value)
         {
+            DocumentChanged = true;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");
@@ -108,6 +110,7 @@ namespace NetOdt
         /// <param name="text">The text for each cell</param>
         public void AppendTable(in int rowCount, in int columnCount, in string text)
         {
+            DocumentChanged = true;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");
@@ -153,6 +156,7 @@ namespace NetOdt
         /// <param name="content">The content for each cell</param>
         public void AppendTable(in int rowCount, in int columnCount, in StringBuilder content)
         {
+            DocumentChanged = true;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");
@@ -197,6 +201,7 @@ namespace NetOdt
         /// <param name="valueArray">The array that contains the values for the table</param>
         public void AppendTable(in IEnumerable<IEnumerable<ValueType>> valueArray)
         {
+            DocumentChanged = true ;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");
@@ -259,6 +264,7 @@ namespace NetOdt
         /// <param name="stringArray">The array that contains the strings for the table</param>
         public void AppendTable(in IEnumerable<IEnumerable<string>> stringArray)
         {
+            DocumentChanged = true;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");
@@ -321,6 +327,7 @@ namespace NetOdt
         /// <param name="contentArray">The array that contains the contents for the table</param>
         public void AppendTable(in IEnumerable<IEnumerable<StringBuilder>> contentArray)
         {
+            DocumentChanged = true;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");
@@ -383,6 +390,7 @@ namespace NetOdt
         /// <param name="dataTable">The <see cref="DataTable"/> that contains the data for the table</param>
         public void AppendTable(in DataTable dataTable)
         {
+            DocumentChanged = true;
             TableCount++;
 
             TextContent.Append($"<table:table table:name=\"Tabelle{TableCount}\" table:style-name=\"Tabelle1\">");

@@ -107,6 +107,7 @@ namespace NetOdt
         /// <param name="style">The style for the content</param>
         internal void AppendLine<TValue>(in TValue content, in Style style) where TValue : notnull
         {
+            DocumentChanged = true;
             if(content is StringBuilder stringBuilder)
             {
                 if(stringBuilder.Length == 0 || !StringBuilderHelper.ContainsLineBreaks(stringBuilder))

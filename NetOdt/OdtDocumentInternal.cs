@@ -115,13 +115,32 @@ namespace NetOdt
             {
                 using(var textReader = new StreamReader(fileStream))
                 {
-                    var rawFileContent    = textReader.ReadToEnd();
-                    var textContentSplit  = rawFileContent.Split(new string[] { "<text:p text:style-name=\"Standard\"/>" }, StringSplitOptions.None);
-                    var styleContentSplit = textContentSplit[0].Split(new string[] { "<office:automatic-styles/>" }, StringSplitOptions.None);
+                    string rawFileContent    = textReader.ReadToEnd();
+                    string finalPhrase = "</text:sequence-decls>";
+                    int pos = rawFileContent.IndexOf(finalPhrase);
+                    if (pos<0)
+                    {
+                        throw new Exception("Unrecognized content.xml structure");
+                    }
+                    pos += finalPhrase.Length;
+                    string preTextPart = rawFileContent.Substring(0, pos);
+                    string atTextPart = rawFileContent.Substring(pos);
+                    pos = atTextPart.LastIndexOf("</office:text>");
+                    if (pos<0)
+                    {
+                        throw new Exception("Unrecognized content.xml structure");
+                    }
+                    var textContentSplit  = rawFileContent.Split(new string[] { "" }, StringSplitOptions.None);
+                    var styleContentSplit = preTextPart.Split(new string[] { "<office:automatic-styles/>" }, StringSplitOptions.None);
 
                     BeforeStyleContent.Append(styleContentSplit.FirstOrDefault() ?? string.Empty);
                     AfterStyleContent.Append(styleContentSplit.LastOrDefault() ?? string.Empty);
-                    AfterTextContent.Append(textContentSplit.LastOrDefault() ?? string.Empty);
+                    AfterTextContent.Append(atTextPart.Substring(pos));
+                    atTextPart = atTextPart.Substring(0, pos).Trim();
+                    if (atTextPart!= "<text:p text:style-name=\"Standard\"/>")
+                    {
+                        TextContent.Append(atTextPart);
+                    }
                 }
             }
 

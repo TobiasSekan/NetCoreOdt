@@ -1,7 +1,8 @@
-﻿using NetOdt.Constants;
+using NetOdt.Constants;
 using System;
 using System.IO;
 using System.Reflection;
+using System.IO.Compression;
 
 namespace NetOdt.Helper
 {
@@ -39,6 +40,11 @@ namespace NetOdt.Helper
 
             // Important: respect the uppercase letter in the folder name
             File.Copy(Path.Combine(originalFolder, "Thumbnails", "thumbnail.png"), Path.Combine(tempWorkingUri.AbsolutePath, "Thumbnails", "thumbnail.png"), true);
+        }
+
+        internal static void ReadOdtZip(in Uri tempWorkingUri, in Uri fileUri)
+        {
+            ZipFile.ExtractToDirectory(fileUri.AbsolutePath, tempWorkingUri.AbsolutePath);
         }
     }
 }
