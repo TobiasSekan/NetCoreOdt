@@ -942,6 +942,11 @@
             The count of master styles
             </summary>
         </member>
+        <member name="P:NetOdt.OdtDocument.DocumentChanged">
+            <summary>
+            if any changes must be written back to document
+            </summary>
+        </member>
         <member name="M:NetOdt.OdtDocument.#ctor">
             <summary>
             Create a new ODT document, save the ODT document as "Unknown.odt" and use a automatic generated temporary folder
@@ -954,6 +959,14 @@
             under the <see cref="F:System.Environment.SpecialFolder.LocalApplicationData"/> folder
             </summary>
             <param name="filePath">The save path for the ODT document</param>
+        </member>
+        <member name="M:NetOdt.OdtDocument.#ctor(System.String@,System.Boolean@)">
+            <summary>
+            Create a new ODT document, save the ODT document into the given file path and use a automatic generated temporary folder
+            under the <see cref="F:System.Environment.SpecialFolder.LocalApplicationData"/> folder
+            </summary>
+            <param name="filePath">The save path for the ODT document</param>
+            <param name="readMode">if we read file instead of writing</param>
         </member>
         <member name="M:NetOdt.OdtDocument.#ctor(System.String@,System.String@)">
             <summary>
@@ -969,12 +982,28 @@
             </summary>
             <param name="fileUri">The uniform resource identifier for the ODT document</param>
         </member>
+        <member name="M:NetOdt.OdtDocument.#ctor(System.Uri@,System.Boolean@)">
+            <summary>
+            Create a new ODT document, save the ODT document into the given uniform resource identifier and use a automatic generated temporary folder
+            under the <see cref="F:System.Environment.SpecialFolder.LocalApplicationData"/> folder
+            </summary>
+            <param name="fileUri">The uniform resource identifier for the ODT document</param>
+            <param name="readMode">if we read file instead of writing</param>
+        </member>
         <member name="M:NetOdt.OdtDocument.#ctor(System.Uri@,System.Uri@)">
             <summary>
             Create a new ODT document, save the ODT document into the given uniform resource identifier and use the given temporary folder on the uniform resource identifier
             </summary>
             <param name="fileUri">The uniform resource identifier for the ODT document</param>
             <param name="tempWorkingUri">The uniform resource identifier  for the temporary working folder for the none zipped document files</param>
+        </member>
+        <member name="M:NetOdt.OdtDocument.#ctor(System.Uri@,System.Uri@,System.Boolean@)">
+            <summary>
+            Create a new ODT document, save the ODT document into the given uniform resource identifier and use the given temporary folder on the uniform resource identifier
+            </summary>
+            <param name="fileUri">The uniform resource identifier for the ODT document</param>
+            <param name="tempWorkingUri">The uniform resource identifier  for the temporary working folder for the none zipped document files</param>
+            <param name="readMode">if we read file instead of writing</param>
         </member>
         <member name="P:NetOdt.OdtDocument.GlobalForegroundColor">
             <summary>
@@ -1315,6 +1344,43 @@
             Check if the style combination is possible
             </summary>
             <param name="style">The style to check</param>
+        </member>
+        <member name="M:NetOdt.OdtDocument.LineIndexOf(System.String,System.Int32)">
+            <summary>
+               Find the first line which contains a string and starting with a certain line
+            </summary>
+            <param name = "searchString" > The string for the search</param>
+            <param name = "startLine">the start line for the search, indexed from 0</param>
+        </member>
+        <member name="M:NetOdt.OdtDocument.GetLineCount()">
+            <summary>
+               Get the current number of lines in the document
+            </summary>
+        </member>
+        <member name="M:NetOdt.OdtDocument.GetRawLine(System.Int32)">
+            <summary>
+               Get line as a raw xml string
+            </summary>
+            <param name = "lineNo" > The sequential number of the line starting with 0.</param>
+        </member>
+        <member name="M:NetOdt.OdtDocument.GetPlainLine(System.Int32)">
+            <summary>
+               Get a plain line as a text without xml markup
+            </summary>
+            <param name = "lineNo" > The sequential number of the line starting with 0.</param>
+        </member>
+        <member name="M:NetOdt.OdtDocument.GetRawTable(System.Int32)">
+            <summary>
+               Get table as a raw string
+            </summary>
+            <param name = "tableNo" > The sequential number of the table starting with 0.</param>
+        </member>
+        <member name="M:NetOdt.OdtDocument.GetDataTable(System.Int32,System.Int32)">
+            <summary>
+            Get table in the form of DataTable
+            </summary>
+            <param name = "tableNo" > The sequential number of the table starting with 0.</param>
+            <param name = "bitwiseOptions" > 0 - plain data, 1-full cell data, 2-throw error if missing a cell, 4-through</param>
         </member>
         <member name="M:NetOdt.OdtDocument.SaveAs(System.String@)">
             <summary>

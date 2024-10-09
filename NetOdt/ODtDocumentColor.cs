@@ -24,6 +24,7 @@ namespace NetOdt
         /// <param name="backgroundColor">The global <see cref="Color"/> of the background for text passages of the document</param>
         public void SetGlobalColors(Color foregroundColor, Color backgroundColor)
         {
+            DocumentChanged = true;
             GlobalForegroundColor = foregroundColor;
             GlobalBackgroundColor = backgroundColor;
         }

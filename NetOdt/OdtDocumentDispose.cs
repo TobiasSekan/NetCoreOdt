@@ -1,4 +1,4 @@
-﻿using NetOdt.Constants;
+using NetOdt.Constants;
 using System;
 using System.IO;
 using System.Xml;
@@ -21,7 +21,10 @@ namespace NetOdt
         /// </summary>
         public void Dispose(in bool overrideExistingFile)
         {
-            Save(overrideExistingFile);
+            if (DocumentChanged)
+            {
+                Save(overrideExistingFile);
+            }
 
             Directory.Delete(FolderResource.TemporaryRootFolderPath, true);
 

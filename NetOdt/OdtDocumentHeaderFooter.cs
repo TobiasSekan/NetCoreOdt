@@ -116,6 +116,7 @@ namespace NetOdt
         public void SetHeader<TValue>(in TValue value, TextStyle textStyle, string fontName, double fontSize, Color foreground, Color background)
             where TValue : notnull
         {
+            DocumentChanged = true; 
             switch(textStyle)
             {
                 case TextStyle.HeadingLevel01:
@@ -241,6 +242,7 @@ namespace NetOdt
         public void SetFooter<TValue>(in TValue content, TextStyle textStyle, string fontName, double fontSize, Color foreground, Color background)
             where TValue : notnull
         {
+            DocumentChanged = true;
             switch(textStyle)
             {
                 case TextStyle.HeadingLevel01:

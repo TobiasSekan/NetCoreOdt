@@ -1,4 +1,4 @@
-﻿using NetOdt.Enumerations;
+using NetOdt.Enumerations;
 using NetOdt.Helper;
 using System;
 
@@ -43,7 +43,7 @@ namespace NetOdt
             {
                 throw new ArgumentOutOfRangeException(nameof(fontSize), fontSize, "The font size can be smaller as 1.0");
             }
-
+            DocumentChanged = true;
             GlobalFontName = fontName;
             GlobalFontSize = fontSize;
         }

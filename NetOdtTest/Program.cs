@@ -1,3 +1,4 @@
+using Microsoft.VisualStudio.TestPlatform.CommunicationUtilities;
 using NetOdt;
 using NetOdt.Enumerations;
 using NUnit.Framework;
@@ -5,6 +6,7 @@ using System;
 using System.Data;
 using System.Drawing;
 using System.Text;
+using System.Threading;
 
 namespace NetOdtTest
 {
@@ -14,9 +16,9 @@ namespace NetOdtTest
         [Test]
         public void CompleteTest()
         {
-            var uri = new Uri("E:/testTest.odt");
+            var uri = new Uri("C:/tmp/testWrite.odt");
 
-            using var odtDocument = new OdtDocument(uri);
+            var odtDocument = new OdtDocument(uri);
 
             odtDocument.SetGlobalFont("Arial", FontSize.Size12);
             odtDocument.SetGlobalColors(Color.White, Color.Black);
@@ -28,7 +30,7 @@ namespace NetOdtTest
 
             odtDocument.AppendTable(GetTable());
 
-            odtDocument.AppendImage("E:/picture1.jpg", width: 10.5, height: 8.0);
+            odtDocument.AppendImage("C:/tmp/picture.jpg", width: 10.5, height: 8.0);
 
             odtDocument.AppendLine("Unformatted", TextStyle.HeadingLevel01);
 
@@ -69,7 +71,7 @@ namespace NetOdtTest
 
             odtDocument.AppendTable(3, 3, "Fill me");
             odtDocument.AppendTable(3, 3, 0.00);
-
+            odtDocument.Dispose();
             // on Dispose call the ODT document will automatic save and temporary working folder will delete
         }
 
@@ -94,5 +96,127 @@ namespace NetOdtTest
 
             return table;
         }
+
+        [Test]
+        public void ReadTest()
+        {
+            var uri = new Uri("C:/tmp/testRead.odt");
+            string message1 = "Audio:";
+            string message2 = "http://sponsorschoose.org/";
+            DataTable table = GetTestTableData();
+            createSimpleTestReadFile(uri, message1 + message2, table);
+            DataTable table1 = readSimpleTestFile(uri, message1, out var restMessage);
+            if(restMessage != message2)
+            {
+                throw new Exception("Read cannot obtain the same result, obtained [" + restMessage + "] but expected " + message2);
+            }
+            compareDataTables(table, table1);
+        }
+
+        [Test]
+        public void ReadTestComplex()
+        {
+            var uri = new Uri("C:/tmp/readTest.odt");
+            string message1 = "Audio:";
+            string message2 = "https://localhost:7001/music/11082024tilbedelse.mp3";
+            DataTable table = readSimpleTestFile(uri, message1, out var restMessage);
+            if(restMessage.Trim() != message2)
+            {
+                throw new Exception("Read cannot obtain the same result, obtained [" + restMessage + "] but expected " + message2);
+            }
+            int cols = table.Columns.Count;
+            int rows = table.Rows.Count;
+            if (cols!=3)
+            {
+                throw new Exception("Column number is " + cols + " but expected 3");
+            }
+            if(rows != 142)
+            {
+                throw new Exception("Row number is " + rows + " but expected 142");
+            }
+
+        }
+
+        private static void createSimpleTestReadFile(Uri uri, string line, DataTable table)
+        {
+            OdtDocument doc = new OdtDocument(uri);
+            doc.AppendLine(line);
+            doc.AppendEmptyLines(1);
+            doc.AppendTable(table);
+            doc.Dispose();
+        }
+
+        private static DataTable readSimpleTestFile(Uri uri, string message, out string restMessage)
+        {
+            OdtDocument doc = new OdtDocument(uri, true);
+            int pos = doc.LineIndexOf(message, 0);
+            if (pos <0)
+            {
+                throw new Exception("Not found line with " + message);
+            }
+            restMessage = doc.GetPlainLine(pos);
+            pos = restMessage.IndexOf(message);
+            if(pos < 0)
+            {
+                throw new Exception("Not found " + message + " in " + restMessage);
+            }
+            restMessage = restMessage.Substring(pos + message.Length);
+            DataTable table = doc.GetDataTable(0,0);
+            return table;
+        }
+
+        private static void compareDataTables(DataTable table1, DataTable table2)
+        {
+            if (table1 == null || table2 == null)
+            {
+                throw new Exception("Null table data");
+            }
+            int cols = table1.Columns.Count;
+            if (cols != table2.Columns.Count)
+            {
+                throw new Exception("Wrong number of columns, expected " + cols + " but it is " + table2.Columns.Count);
+            }
+            int rows = table1.Rows.Count;
+            if(rows != table2.Rows.Count)
+            {
+                throw new Exception("Wrong number of rows, expected " + rows + " but it is " + table2.Rows.Count);
+            }
+            for(int col=0; col < cols; col++)
+            {
+                for(int row = 0; row < rows; row++)
+                {
+                    string s1 = table1.Rows[row].ItemArray[col].ToString();
+                    string s2 = table2.Rows[row].ItemArray[col].ToString();
+                    if(s1 != s2)
+                    {
+                        throw new Exception(s1 + " does not match " + s2 + " at " + row + ","+ col);
+                    }
+                }
+            }
+        }
+        private static DataTable GetTestTableData()
+        {
+            DataTable table = new DataTable("Table");
+            table.Columns.Add("Time", typeof(string));
+            table.Columns.Add("nb", typeof(string));
+            table.Columns.Add("en", typeof(string));
+            object[] headers = new object[3];
+            headers[0] = "";
+            headers[1] = "nb";
+            headers[2] = "en";
+            table.Rows.Add(headers);
+            object[] data1 = new object[3];
+            data1[0] = "01:00";
+            data1[1] = "Du rufst mich raus auf's weite Wasser";
+            data1[2] = "You called me from deep waters";
+            table.Rows.Add(data1);
+            object[] data2 = new object[3];
+            data2[0] = "02:00.23";
+            data2[1] = "wo Füße nicht... mehr sicher stehn";
+            data2[2] = "Where no foot, me safely placed";
+            table.Rows.Add(data2);
+            return table;
+        }
+
     }
 }

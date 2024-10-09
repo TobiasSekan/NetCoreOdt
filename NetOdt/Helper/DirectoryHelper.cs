@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Runtime.CompilerServices;
 
@@ -23,8 +23,20 @@ namespace NetOdt.Helper
         /// </summary>
         /// <param name="uriLeft">The left part for the complete path</param>
         /// <param name="pathRight">The right part for the complete path</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal static void Delete(Uri uriLeft, string pathRight)
-            => Directory.Delete(Path.Combine(uriLeft.AbsolutePath, pathRight));
+        {
+            try
+            {
+                string path = Path.Combine(uriLeft.AbsolutePath, pathRight);
+                if(Directory.Exists(path))
+                {
+                    Directory.Delete(path, true);
+                }
+            }
+            catch(Exception ex)
+            {
+            }
+        }
+            
     }
 }

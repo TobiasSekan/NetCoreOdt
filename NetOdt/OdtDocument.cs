@@ -5,6 +5,7 @@ using NetOdt.Helper;
 using System;
 using System.Collections.ObjectModel;
 using System.Drawing;
+using System.IO;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Xml;
@@ -50,6 +51,12 @@ namespace NetOdt
         /// </summary>
         public byte MasterStyleCount { get; private set; }
 
+        /// <summary>
+        /// if any changes must be written back to document
+        /// </summary>
+        public bool DocumentChanged { get; private set; }
+
+
         #endregion Public Properties
 
         #region Public Constructors
@@ -72,6 +79,17 @@ namespace NetOdt
             : this(new Uri(filePath))
         {
         }
+        /// <summary>
+        /// Create a new ODT document, save the ODT document into the given file path and use a automatic generated temporary folder
+        /// under the <see cref="Environment.SpecialFolder.LocalApplicationData"/> folder
+        /// </summary>
+        /// <param name="filePath">The save path for the ODT document</param>
+        /// <param name="readMode">if we read file instead of writing</param>
+        public OdtDocument(in string filePath, in bool readMode)
+            : this(new Uri(filePath), readMode)
+        {
+        }
+
 
         /// <summary>
         /// Create a new ODT document, save the ODT document into the given file path and use the given temporary folder
@@ -83,6 +101,8 @@ namespace NetOdt
         {
         }
 
+
+
         /// <summary>
         /// Create a new ODT document, save the ODT document into the given uniform resource identifier and use a automatic generated temporary folder
         /// under the <see cref="Environment.SpecialFolder.LocalApplicationData"/> folder
@@ -92,6 +112,17 @@ namespace NetOdt
             : this(fileUri, UriHelper.Combine(FolderResource.TemporaryRootFolderPath, Guid.NewGuid().ToString()))
         {
         }
+        /// <summary>
+        /// Create a new ODT document, save the ODT document into the given uniform resource identifier and use a automatic generated temporary folder
+        /// under the <see cref="Environment.SpecialFolder.LocalApplicationData"/> folder
+        /// </summary>
+        /// <param name="fileUri">The uniform resource identifier for the ODT document</param>
+        /// <param name="readMode">if we read file instead of writing</param>
+        public OdtDocument(in Uri fileUri, in bool readMode)
+            : this(fileUri, UriHelper.Combine(FolderResource.TemporaryRootFolderPath, Guid.NewGuid().ToString()), readMode)
+        {
+        }
+
 
         /// <summary>
         /// Create a new ODT document, save the ODT document into the given uniform resource identifier and use the given temporary folder on the uniform resource identifier
@@ -99,10 +130,25 @@ namespace NetOdt
         /// <param name="fileUri">The uniform resource identifier for the ODT document</param>
         /// <param name="tempWorkingUri">The uniform resource identifier  for the temporary working folder for the none zipped document files</param>
         public OdtDocument(in Uri fileUri, in Uri tempWorkingUri)
+             : this(fileUri, tempWorkingUri, false) 
+        {
+              
+        }
+        /// <summary>
+        /// Create a new ODT document, save the ODT document into the given uniform resource identifier and use the given temporary folder on the uniform resource identifier
+        /// </summary>
+        /// <param name="fileUri">The uniform resource identifier for the ODT document</param>
+        /// <param name="tempWorkingUri">The uniform resource identifier  for the temporary working folder for the none zipped document files</param>
+        /// <param name="readMode">if we read file instead of writing</param>
+        public OdtDocument(in Uri fileUri, in Uri tempWorkingUri, in bool readMode)
         {
             FileUri                  = fileUri;
             TempWorkingUri           = tempWorkingUri;
-
+            DocumentChanged          = !readMode;
+            if (Directory.Exists(TempWorkingUri.AbsolutePath))
+            {
+                Directory.Delete(tempWorkingUri.AbsolutePath, true);
+            }
             ContentFileUri           = UriHelper.Combine(TempWorkingUri, FileName.ContentFile);
             ManifestFileUri          = UriHelper.Combine(TempWorkingUri, FolderResource.MainfestFolderName, FileName.ManifestFile);
             StyleFileUri             = UriHelper.Combine(TempWorkingUri, FileName.StyleFile);
@@ -129,12 +175,17 @@ namespace NetOdt
 
             GlobalFontName           = "Liberation Serif";
             GlobalFontSize           = 12;
-
-            OdtDocumentHelper.CreateOdtTemplate(TempWorkingUri);
+            if (readMode) 
+            {
+                OdtDocumentHelper.ReadOdtZip(TempWorkingUri, FileUri);
+            } else {
+                OdtDocumentHelper.CreateOdtTemplate(TempWorkingUri);
+            }
             ReadContent();
 
             SetGlobalFont("Liberation Serif", FontSize.Size12);
             SetGlobalColors(Color.Black, Color.Transparent);
+             
         }
 
         #endregion Public Constructors

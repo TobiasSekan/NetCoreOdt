@@ -1,4 +1,4 @@
-﻿using NetOdt.Constants;
+using NetOdt.Constants;
 using NetOdt.Helper;
 using System;
 using System.Globalization;
@@ -19,6 +19,7 @@ namespace NetOdt
         /// <param name="height">The height of the picture in centimeter (cm)</param>
         public void AppendImage(string imagePath, double width, double height)
         {
+            DocumentChanged = true;
             PictureCount++;
 
             var pictureExtension = Path.GetExtension(imagePath);
@@ -44,6 +45,7 @@ namespace NetOdt
         /// <param name="height">The height of the picture in centimeter (cm)</param>
         public void AppendImage(Uri imageUri, double width, double height)
         {
+            DocumentChanged = true;
             var pictureExtension = PathHelper.GetExtension(imageUri);
             var mineType         = FileHelper.GetMineType(imageUri.AbsolutePath);
             var picturePath      = $"{FolderResource.PictureFolderName}/{PictureCount}{pictureExtension}";
